@@ -15,7 +15,7 @@ app.get("/", (req, res) => {
     res.send("HRMS Backend Running...");
 });
 
-app.use('/api/users', userRoutes); // mount routes
+app.use('/api/users', userRoutes); 
 
 
 const PORT = process.env.PORT || 5000;
