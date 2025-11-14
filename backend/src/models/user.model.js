@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
         orgId: {
             type: String,
             required: true,
-            unique:true
+            unique: true
         },
         isVerified: {
             type: Boolean,
