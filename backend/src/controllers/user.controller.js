@@ -1,11 +1,13 @@
+const crypto = require('crypto')
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
 const Token = require('../models/token.model');
 const { hashPassword } = require('../utils/hashPassword');
 const { validateSignup } = require('../validations/user.validation');
-const crypto = require('crypto')
 const sendEmail = require('../utils/sendEmail');
 
-
+// Signup
 const signup = async (req, res) => {
     try {
         //  Validate input
@@ -50,6 +52,7 @@ const signup = async (req, res) => {
     }
 };
 
+// Email verification
 const verifyEmail = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -70,6 +73,35 @@ const verifyEmail = async (req, res) => {
     }
 };
 
+// SIGN IN
+const signin = async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
-module.exports = { signup, verifyEmail };
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+
+        // Create JWT payload
+        const payload = { id: user._id, role: user.role };
+
+        // Sign JWT token with 1h expiry
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        // Send HttpOnly cookie for authentication
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Strict',
+            maxAge: 3600000
+        });
+
+        res.status(200).json({ message: 'Login successful', user: { id: user._id, name: user.name, role: user.role } });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+module.exports = { signup, verifyEmail, signin };
 
