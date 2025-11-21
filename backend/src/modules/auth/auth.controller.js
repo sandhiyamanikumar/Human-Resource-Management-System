@@ -1,11 +1,11 @@
 const crypto = require('crypto')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/user.model');
-const Token = require('../models/token.model');
-const { hashPassword } = require('../utils/hashPassword');
-const { validateSignup } = require('../validations/user.validation');
-const sendEmail = require('../utils/sendEmail');
+const User = require('./auth.model');
+const Token = require('./token.model');
+const { hashPassword } = require('../../utils/hashPassword');
+const { validateSignup } = require('./auth.validation');
+const sendEmail = require('../../utils/sendEmail');
 
 // Signup
 const signup = async (req, res) => {
@@ -39,7 +39,7 @@ const signup = async (req, res) => {
             token: crypto.randomBytes(32).toString("hex")
         }).save()
 
-        const verificationUrl = `${process.env.BASE_URL}/api/users/${user._id}/verify-email/${token.token}`;
+        const verificationUrl = `${process.env.BACKEND_BASE_URL}/api/auth/${user._id}/verify-email/${token.token}`;
         const html = `<p>Click <a href="${verificationUrl}">here</a> to verify your email. Link expires in 1 hour.</p>`;
 
         await sendEmail(user.email, 'Verify Your Email', html);
@@ -55,21 +55,34 @@ const signup = async (req, res) => {
 // Email verification
 const verifyEmail = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
-        if (!user) return res.status(400).json({ message: 'Invalid link' });
+        const { id, token } = req.params;
 
+        const user = await User.findById(id);
+        if (!user)
+            return res.redirect(`http://localhost:5173/verify-email/${id}/${token}?status=invalid`);
+
+        // If user is already verified → return already verified (even if token deleted)
         if (user.isVerified)
-            return res.status(400).json({ message: 'Email already verified' });
+            return res.redirect(`http://localhost:5173/verify-email/${id}/${token}?status=already`);
 
-        const token = await Token.findOne({ userId: user._id, token: req.params.token });
-        if (!token) return res.status(400).json({ message: 'Invalid or expired token' });
+        // User not verified yet → check token
+        const tokenDoc = await Token.findOne({ userId: id, token });
 
-        await User.updateOne({ _id: user._id }, { isVerified: true });
-        await token.deleteOne();
+        if (!tokenDoc) {
+            // Token missing → EXPIRED
+            return res.redirect(`http://localhost:5173/verify-email/${id}/${token}?status=expired`);
+        }
 
-        res.status(200).json({ message: 'Email verified successfully' });
+        // Token found → verify user
+        await User.updateOne({ _id: id }, { isVerified: true });
+
+        // delete token after verify
+        await tokenDoc.deleteOne();
+
+        return res.redirect(`http://localhost:5173/verify-email/${id}/${token}?status=success`);
+
     } catch (error) {
-        res.status(500).json({ message: 'Internal Server Error' });
+        return res.redirect(`http://localhost:5173/verify-email/error`);
     }
 };
 
