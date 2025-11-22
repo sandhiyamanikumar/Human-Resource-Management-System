@@ -44,7 +44,7 @@ const Login = () => {
 
 
     return (
-        <Container className="d-flex justify-content-center align-items-center h-100vh m-5">
+        <Container className="d-flex justify-content-center align-items-center min-vh-100 px-3">
             <Card className="p-4 shadow-lg border border-light rounded-4" style={{ width: "430px" }}>
                 <h2 className="text-center mb-4">Login</h2>
 
