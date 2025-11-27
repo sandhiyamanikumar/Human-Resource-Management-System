@@ -6,7 +6,7 @@ const connectDB = require("./src/config/db.js");
 const authRoutes = require('./src/modules/auth/auth.routes.js')
 const roleRoutes = require('./src/modules/role/role.routes');
 const moduleRoutes = require('./src/modules/module/module.routes');
-
+const userRoutes = require("./src/modules/user/user.routes.js");
 
 dotenv.config();
 connectDB();
@@ -31,6 +31,7 @@ app.use('/api/hr', require('./src/modules/hr/hr.routes.js'));
 app.use('/api/employee', require('./src/modules/employee/employee.routes.js'));
 app.use('/api/roles', roleRoutes);
 app.use('/api/modules', moduleRoutes);
+app.use("/api/users", userRoutes);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

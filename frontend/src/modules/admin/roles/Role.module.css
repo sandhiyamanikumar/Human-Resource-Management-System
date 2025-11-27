@@ -1,0 +1,12 @@
+/* Desktop fixed table width */
+.fixed-table-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Smaller screens – let table be fluid */
+@media (max-width: 768px) {
+    .fixed-table-container {
+        max-width: 100% !important;
+    }
+}

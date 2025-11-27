@@ -13,15 +13,11 @@ const signup = async (req, res) => {
         const { error } = validateSignup(req.body);
         if (error) return res.status(400).json({ message: error.details[0].message });
 
-        const { name, email, password, role, orgId } = req.body;
+        const { name, email, password, orgId } = req.body;
 
         // Check if user exists
         const existing = await User.findOne({ email });
         if (existing) return res.status(400).json({ message: 'User already exists' });
-
-        // Convert role string → find Role document
-        const roleDoc = await Role.findOne({ roleName: role.trim().toLowerCase() });
-        if (!roleDoc) return res.status(400).json({ message: "Invalid role" });
 
         // Hash password
         const hashedPassword = await hashPassword(password);
@@ -31,7 +27,6 @@ const signup = async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            role: roleDoc._id,
             orgId
         });
 
@@ -96,39 +91,43 @@ const signin = async (req, res) => {
     const { email, password } = req.body;
 
     try {
+        // Find user and populate role
         const user = await User.findOne({ email }).populate("role");
-        if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+        if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
+        // Check password
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+        if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
+        // Generate JWT token
         const payload = { id: user._id };
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-        res.cookie('token', token, {
+        // Set cookie
+        res.cookie("token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'Strict',
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Strict",
             maxAge: 3600000
         });
 
+        // Respond with user data safely
         res.json({
             message: "Login successful",
             user: {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                role: user.role.roleName,
-                permissions: user.role.permissions
+                role: user.role ? user.role.roleName : null,
+                permissions: user.role ? user.role.permissions : {}
             }
         });
 
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        console.error("Signin error:", err);
+        res.status(500).json({ message: "Internal server error" });
     }
 };
-
 
 const getMe = async (req, res) => {
     try {
@@ -140,14 +139,16 @@ const getMe = async (req, res) => {
             id: user._id,
             name: user.name,
             email: user.email,
-            role: user.role.roleName,
-            permissions: user.role.permissions
+            role: user.role ? user.role.roleName : null,
+            permissions: user.role ? user.role.permissions : {}
         });
 
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        console.error("getMe error:", err);
+        res.status(500).json({ message: "Internal server error" });
     }
 };
+
 
 module.exports = { signup, verifyEmail, signin, getMe };
 

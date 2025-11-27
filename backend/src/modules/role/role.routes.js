@@ -20,6 +20,14 @@ router.get(
     roleController.getRoles
 );
 
+// GET role by ID
+router.get(
+    "/:id",
+    authMiddleware,
+    checkPermission("role", "view"),
+    roleController.getRoleById
+);
+
 // UPDATE
 router.put(
     "/:id",

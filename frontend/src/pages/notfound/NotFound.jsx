@@ -1,4 +1,3 @@
-// src/pages/notfound/NotFound.jsx
 import React from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";

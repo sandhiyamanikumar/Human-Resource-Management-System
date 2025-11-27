@@ -12,7 +12,6 @@ const validateSignup = (data) => {
                 "string.pattern.base":
                     "Password must contain at least 8 characters, one uppercase, one lowercase, one number and one special character"
             }),
-        role: Joi.string().valid('admin', 'hr', 'employee'),
         orgId: Joi.string().required()
     });
 

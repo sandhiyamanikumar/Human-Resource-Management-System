@@ -10,7 +10,6 @@ const Signup = () => {
         name: "",
         email: "",
         password: "",
-        role: "",
         orgId: "",
     });
 
@@ -54,12 +53,12 @@ const Signup = () => {
         }
 
         try {
-            const dataToSend = { ...formData, role: formData.role || "employee" };
+            const dataToSend = { ...formData }
             const response = await signup(dataToSend);
 
             setMessage(response.data.message || "Signup successful! Please verify your email.");
 
-            setFormData({ name: "", email: "", password: "", role: "", orgId: "" });
+            setFormData({ name: "", email: "", password: "", orgId: "" });
 
             setTimeout(() => navigate("/login"), 2000);
         } catch (err) {
@@ -71,7 +70,7 @@ const Signup = () => {
 
     return (
         <Container className="d-flex justify-content-center align-items-center py-3 h-100vh">
-            <Card className="p-4 shadow-lg border border-light rounded-4" style={{ width: "450px"}}>
+            <Card className="p-4 shadow-lg border border-light rounded-4" style={{ width: "450px" }}>
                 <h2 className="text-center mb-4">Create Account</h2>
 
                 {message && <Alert variant="success">{message}</Alert>}
@@ -117,15 +116,6 @@ const Signup = () => {
                         </Form.Text>
                     </Form.Group>
 
-                    <Form.Group className="mb-3" controlId="role">
-                        <Form.Label>Role</Form.Label>
-                        <Form.Select name="role" value={formData.role} onChange={handleChange}>
-                            <option value="">Employee (default)</option>
-                            <option value="hr">HR</option>
-                            <option value="admin">Admin</option>
-                        </Form.Select>
-                    </Form.Group>
-
                     <Form.Group className="mb-3" controlId="orgId">
                         <Form.Label>Organization ID</Form.Label>
                         <Form.Control
@@ -144,9 +134,8 @@ const Signup = () => {
 
                     <div className="text-center mt-3">
                         <span>Already have an account? </span>
-                        <Link to="/login" 
-                        className="fw-bold"
-                    >Login</Link>
+                        <Link to="/login"
+                        >Login</Link>
                     </div>
                 </Form>
             </Card>
