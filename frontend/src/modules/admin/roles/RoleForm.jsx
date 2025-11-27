@@ -88,7 +88,7 @@ const RoleForm = () => {
     };
 
     return (
-        <Container className="mt-4" style={{ maxWidth: "900px" }}>
+        <Container className="mt-sm-4 m-0 p-0" style={{ maxWidth: "900px" }}>
             <Card className="shadow-sm p-4">
                 <h3 className="fw-bold mb-4">{id ? "Edit Role" : "Add Role"}</h3>
 

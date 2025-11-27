@@ -1,40 +1,60 @@
-import React from "react";
+import React, { useState } from "react";
 import Sidebar from "../components/Sidebar/Sidebar";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Button } from "react-bootstrap";
-import { BoxArrowRight } from 'react-bootstrap-icons';
+import { BoxArrowRight, List } from "react-bootstrap-icons";
 
 const PrivateLayout = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const [showSidebar, setShowSidebar] = useState(false);
 
     const handleLogout = () => {
-        logout();           // clear user from context and localStorage
-        navigate("/login"); // redirect to login page
+        logout();
+        navigate("/login");
     };
 
     return (
-        <div className="d-flex vh-100">
+        <div className="d-flex" style={{ minHeight: "100vh" }}>
             {/* Sidebar */}
-            <Sidebar />
+            <Sidebar show={showSidebar} setShow={setShowSidebar} />
 
-            {/* Main content */}
+            {/* Main Content */}
             <div className="flex-grow-1 d-flex flex-column">
-                {/* Top bar */}
+                
+                {/* Topbar */}
                 <div
-                    className="bg-light p-3 shadow-sm d-flex justify-content-between align-items-center"
+                    className="bg-light p-3 shadow-sm d-flex align-items-center justify-content-between"
                     style={{ height: "60px" }}
                 >
-                    <span>Welcome, {user?.name}</span>
-                    <Button variant="outline-danger" size="sm" onClick={handleLogout} className="fs-6">
-                         <BoxArrowRight className="me-2" />Logout
+                    <Button
+                        variant="outline-primary"
+                        className="d-md-none me-2"
+                        onClick={() => setShowSidebar(true)}
+                    >
+                        <List size={24} />
+                    </Button>
+
+                    <span className="fw-semibold">Welcome, {user?.name}</span>
+
+                    <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={handleLogout}
+                        className="fs-6"
+                    >
+                        <BoxArrowRight className="me-md-2" />
+                        <span className="d-none d-sm-inline">Logout</span>
                     </Button>
                 </div>
 
-                {/* Page content */}
-                <div className="flex-grow-1 overflow-auto p-3">
-                    <Outlet /> {/* This renders AdminDashboard, HRDashboard, etc. */}
+                {/* Page Content - Scrollable */}
+                <div
+                    className="flex-grow-1 overflow-auto p-sm-3"
+                    style={{ minHeight: 0 }}
+                >
+                    <Outlet />
                 </div>
             </div>
         </div>

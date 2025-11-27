@@ -14,9 +14,6 @@ import AdminDashboard from "../modules/admin/dashboard/AdminDashboard";
 import RoleList from "../modules/admin/roles/RoleList";
 import RoleForm from "../modules/admin/roles/RoleForm";
 import AssignRole from "../modules/admin/roles/AssignRole";
-import EmployeeModule from "../modules/employee/EmployeeModule";
-import LeaveModule from "../modules/leave/LeaveModule";
-
 import ModulesPage from "../modules/admin/modulesManagement/ModulesPage";
 
 const AppRoutes = () => {
@@ -40,8 +37,8 @@ const AppRoutes = () => {
                     <Route path="role/new" element={<RoleForm />} />         
                     <Route path="role/edit/:id" element={<RoleForm />} />    
                     <Route path="assign-role" element={<AssignRole />} />
-                    <Route path="employee" element={<EmployeeModule />} />
-                    <Route path="leave" element={<LeaveModule />} />
+                    <Route path="employee" element={<p>Employee Module</p>} />
+                    <Route path="leave" element={<p>Leave Module</p>} />
                     <Route path="attendance" element={<p>Attendance Module</p>} />
                     <Route path="hr" element={<p>HR Module</p>} />
                     <Route path="/admin/module" element={<ModulesPage />} /> 

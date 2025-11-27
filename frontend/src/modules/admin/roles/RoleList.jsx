@@ -4,6 +4,7 @@ import { getRoles, deleteRole } from "../../../api/role.api";
 import { useNavigate } from "react-router-dom";
 import { PencilSquare, Trash, PlusLg } from "react-bootstrap-icons";
 import { useToast } from "../../../context/ToastContext";
+import styles from "./Role.module.css";
 
 const RoleList = () => {
     const [roles, setRoles] = useState([]);
@@ -54,31 +55,40 @@ const RoleList = () => {
     };
 
     return (
-        <Container className="mt-4">
+        <Container className="px-2 px-sm-0 mt-3">
             {/* Header */}
-            <Row className="mb-3">
-                <Col>
-                    <h2 className="fw-bold text-primary">Role Management</h2>
-                    <p className="text-muted">Manage application roles and permissions</p>
+            <Row className="mb-3 align-items-center flex-column flex-sm-row">
+                {/* Title Section */}
+                <Col className="text-center text-sm-start mb-2 mb-sm-0">
+                    <h2 className="fw-bold text-primary fs-5">Role Management</h2>
+                    <p className="text-muted mb-0">Manage application roles and permissions</p>
                 </Col>
-                <Col className="text-end">
-                    <Button variant="primary" onClick={() => navigate("/admin/role/new")}>
-                        <PlusLg className="me-2" />Add New Role
+
+                {/* Button Section */}
+                <Col className="text-center text-sm-end">
+                    <Button
+                        variant="primary"
+                        className="w-100vh"
+                        onClick={() => navigate("/admin/role/new")}
+                    >
+                        <PlusLg className="me-2" />
+                        Add New Role
                     </Button>
                 </Col>
             </Row>
 
             {/* Roles Table */}
-            <Card className="shadow-sm">
+           <Card className={`shadow-sm ${styles.fixedTableContainer} m-0 p-0`}>
                 <Card.Body>
                     <Table striped bordered hover responsive>
                         <thead className="table-dark">
                             <tr>
                                 <th>#</th>
                                 <th>Role Name</th>
-                                <th style={{ width: "180px" }}>Actions</th>
+                                <th className="text-nowrap">Actions</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             {roles.length === 0 ? (
                                 <tr>
@@ -95,17 +105,20 @@ const RoleList = () => {
                                             <Button
                                                 variant="warning"
                                                 size="sm"
-                                                className="me-2"
+                                                className="me-2 "
                                                 onClick={() => navigate(`/admin/role/edit/${role._id}`)}
                                             >
-                                                <PencilSquare className="me-1" />Edit
+                                                <PencilSquare className="me-1" />
+                                                <span className="d-none d-lg-inline">Edit</span>
                                             </Button>
+
                                             <Button
                                                 variant="danger"
                                                 size="sm"
                                                 onClick={() => handleOpenModal(role._id)}
                                             >
-                                                <Trash className="me-1" />Delete
+                                                <Trash className="me-1" />
+                                                <span className="d-none d-lg-inline">Delete</span>
                                             </Button>
                                         </td>
                                     </tr>
@@ -115,6 +128,7 @@ const RoleList = () => {
                     </Table>
                 </Card.Body>
             </Card>
+
 
             {/* Delete Confirmation Modal */}
             <Modal show={showModal} onHide={handleCloseModal} centered>

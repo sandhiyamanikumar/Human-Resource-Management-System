@@ -1,4 +1,3 @@
-// src/pages/PendingRole.jsx
 import React from "react";
 import { Container, Card, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";

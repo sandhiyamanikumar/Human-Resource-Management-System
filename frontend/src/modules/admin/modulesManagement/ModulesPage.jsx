@@ -3,6 +3,7 @@ import { Table, Button, Spinner, Modal } from "react-bootstrap";
 import { getModules, deleteModule } from "../../../api/module.api";
 import ModuleFormModal from "./ModuleFormModal";
 import PermissionsModal from "./PermissionsModal";
+import { PencilSquare, Trash } from "react-bootstrap-icons";
 
 const ModulesPage = () => {
     const [modules, setModules] = useState([]);
@@ -43,7 +44,7 @@ const ModulesPage = () => {
     const handleConfirmDelete = async () => {
         try {
             await deleteModule(selectedId);
-            await  fetchModules();
+            await fetchModules();
             showToast("Module deleted successfully!", "success");
         } catch (err) {
             console.error(err);
@@ -88,13 +89,21 @@ const ModulesPage = () => {
                                     <td>{mod.moduleName}</td>
                                     <td>{mod.description || "-"}</td>
                                     <td>
-                                        <Button variant="info" size="sm" onClick={() => handleEdit(mod)}>
-                                            Edit
+                                        <Button variant="warning"
+                                            size="sm"
+                                            className="me-1 mb-2 mb-sm-0"
+                                            onClick={() => handleEdit(mod)}
+                                        >
+                                            <PencilSquare className="me-1" />
+                                            <span className="d-none d-lg-inline">Edit</span>
                                         </Button>{" "}
-                                        <Button variant="danger" size="sm" onClick={() => handleOpenModal(mod._id)}>
-                                            Delete
+                                        <Button variant="danger" size="sm"
+                                            className="me-1 mb-2 mb-sm-0"
+                                            onClick={() => handleOpenModal(mod._id)}>
+                                            <Trash className="me-1" />
+                                            <span className="d-none d-lg-inline">Delete</span>
                                         </Button>{" "}
-                                        <Button variant="secondary" size="sm" onClick={() => handlePermissions(mod)}>
+                                        <Button variant="primary" size="sm"  className="me-1 mb-2 mb-sm-0" onClick={() => handlePermissions(mod)}>
                                             Permissions
                                         </Button>
                                     </td>
