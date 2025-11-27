@@ -1,4 +1,3 @@
-// src/modules/user/user.controller.js
 const User = require("../auth/auth.model"); // Use auth.model.js
 const Role = require("../role/role.model");
 const sendEmail = require("../../utils/sendEmail");
@@ -20,30 +19,7 @@ exports.getUsers = async (req, res) => {
     }
 };
 
-
-// ASSIGN ROLE
-// exports.assignRole = async (req, res) => {
-//     try {
-//         const { roleId } = req.body;
-
-//         const role = await Role.findById(roleId);
-//         if (!role) return res.status(404).json({ message: "Role not found" });
-
-//         const user = await User.findByIdAndUpdate(
-//             req.params.id,
-//             {
-//                 role: role._id,
-//                 status: "Active"
-//             },
-//             { new: true }
-//         ).populate("role");
-
-//         res.json(user);
-//     } catch (err) {
-//         res.status(500).json({ error: err.message });
-//     }
-// };
-
+// ASSIGN ROLE TO USER (Admin only)
 exports.assignRole = async (req, res) => {
     try {
         const { roleId } = req.body;

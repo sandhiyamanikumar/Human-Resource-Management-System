@@ -6,7 +6,7 @@ exports.createModule = async (req, res) => {
     try {
         const { moduleName, description, permissions } = req.body;
 
-        // Optional: validate permissions
+        //validate permissions
         const allowedPermissions = ["view", "create", "edit", "delete", "approve", "reject", "mark"];
         const validPermissions = Array.isArray(permissions)
             ? permissions.filter(p => allowedPermissions.includes(p))
