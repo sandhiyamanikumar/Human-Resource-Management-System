@@ -1,18 +1,14 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Form, Button, Container, Row, Col, Alert, Spinner, Card } from "react-bootstrap";
-import { loginUser } from "../../api/auth.api";
+import { Form, Button, Container, Alert, Spinner, Card } from "react-bootstrap";
+import { loginUser } from "../../api/auth.api"; // your API call
 import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
     const navigate = useNavigate();
     const { login } = useAuth();
 
-    const [formData, setFormData] = useState({
-        email: "",
-        password: ""
-    });
-
+    const [formData, setFormData] = useState({ email: "", password: "" });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -27,21 +23,31 @@ const Login = () => {
 
         try {
             const res = await loginUser(formData);
-            login(res.data.user); // save user in context
+
+            const userData = res.data.user;       // { name, email, role, permissions }
+            const token = res.data.token;         // JWT token
+
+            login(userData, token);               // save in context + cookie
 
             // Redirect based on role
-            const role = res.data.user.role; // "admin", "hr", "employee"
+            if (!userData.role) {
+                navigate("/pending-role");
 
-            if (role === "admin") navigate("/admin");
-            else if (role === "hr") navigate("/hr");
-            else navigate("/employee");
+            } else if (userData.role === "admin") {
+                navigate("/admin");
+
+            } else if (userData.role === "hr") {
+                navigate("/hr");
+            } else {
+                navigate("/employee");
+            }
         } catch (err) {
             setError(err.response?.data?.message || "Login failed");
+            console.log(err)
         } finally {
             setLoading(false);
         }
     };
-
 
     return (
         <Container className="d-flex justify-content-center align-items-center min-vh-100 px-3">
@@ -81,9 +87,7 @@ const Login = () => {
 
                     <div className="text-center mt-3">
                         <span>Don't have an account? </span>
-                        <Link to="/signup">
-                            Create Account
-                        </Link>
+                        <Link to="/signup">Create Account</Link>
                     </div>
                 </Form>
             </Card>

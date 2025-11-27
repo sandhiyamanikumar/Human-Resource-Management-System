@@ -10,7 +10,6 @@ const Signup = () => {
         name: "",
         email: "",
         password: "",
-        role: "",
         orgId: "",
     });
 
@@ -54,12 +53,12 @@ const Signup = () => {
         }
 
         try {
-            const dataToSend = { ...formData, role: formData.role || "employee" };
+            const dataToSend = { ...formData}
             const response = await signup(dataToSend);
 
             setMessage(response.data.message || "Signup successful! Please verify your email.");
 
-            setFormData({ name: "", email: "", password: "", role: "", orgId: "" });
+            setFormData({ name: "", email: "", password: "", orgId: "" });
 
             setTimeout(() => navigate("/login"), 2000);
         } catch (err) {
@@ -115,15 +114,6 @@ const Signup = () => {
                         <Form.Text className="text-muted">
                             Must contain uppercase, lowercase & special character.
                         </Form.Text>
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" controlId="role">
-                        <Form.Label>Role</Form.Label>
-                        <Form.Select name="role" value={formData.role} onChange={handleChange}>
-                            <option value="">Employee (default)</option>
-                            <option value="hr">HR</option>
-                            <option value="admin">Admin</option>
-                        </Form.Select>
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="orgId">

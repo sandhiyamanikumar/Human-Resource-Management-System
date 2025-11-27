@@ -24,7 +24,7 @@ const Home = () => {
                     <p className="mx-auto fs-5">
                         Manage employees, leaves, attendance & permissions in one smart platform.
                     </p>
-                    <Button variant="light" size="lg" href="/signup" className="mt-4">
+                    <Button variant="light" size="lg" href="/login" className="mt-4">
                         Get Started
                     </Button>
                 </Container>
