@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs');
 dotenv.config();
-require('../../config/db');
+require('../src/config/db');
 
 // Import models
-const Module = require('../module/module.model');
-const Role = require('../role/role.model');
-const User = require('../auth/auth.model');
+const Module = require('../src/modules/module/module.model');
+const Role = require('../src/modules/role/role.model');
+const User = require('../src/modules/auth/auth.model');
 
 // Define modules
 const modulesData = [
