@@ -1,4 +1,11 @@
-import axiosInstance from "./axiosInstance.js";
+// user.api.js
+import axiosInstance from "./axiosInstance";
 
-export const getUsers = () => axiosInstance.get("/api/users");
-export const assignRole = (userId, payload) => axiosInstance.put(`/api/users/${userId}/assign-role`, payload);
+export const getUsers = async (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  const res = await axiosInstance.get(`/api/users?${query}`);
+  return res.data; // returns { users: [...], total, page, limit }
+};
+
+export const assignRole = (userId, payload) =>
+  axiosInstance.put(`/api/users/${userId}/assign-role`, payload);

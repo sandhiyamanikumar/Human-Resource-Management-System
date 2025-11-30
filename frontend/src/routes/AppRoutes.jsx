@@ -16,6 +16,9 @@ import RoleForm from "../modules/admin/roles/RoleForm";
 import AssignRole from "../modules/admin/roles/AssignRole";
 import ModulesPage from "../modules/admin/modulesManagement/ModulesPage";
 
+import EmployeesPage from "../modules/employees/EmployeesPage";
+
+
 const AppRoutes = () => {
     return (
         <Routes>
@@ -33,15 +36,15 @@ const AppRoutes = () => {
             <Route element={<PrivateLayout />}>
                 <Route path="/admin" element={<AdminDashboard />}>
                     <Route index element={<p>Welcome Admin</p>} />
-                    <Route path="role" element={<RoleList />} />             
-                    <Route path="role/new" element={<RoleForm />} />         
-                    <Route path="role/edit/:id" element={<RoleForm />} />    
+                    <Route path="role" element={<RoleList />} />
+                    <Route path="role/new" element={<RoleForm />} />
+                    <Route path="role/edit/:id" element={<RoleForm />} />
                     <Route path="assign-role" element={<AssignRole />} />
-                    <Route path="employee" element={<p>Employee Module</p>} />
+                    <Route path="employee" element={<EmployeesPage />} />
                     <Route path="leave" element={<p>Leave Module</p>} />
                     <Route path="attendance" element={<p>Attendance Module</p>} />
                     <Route path="hr" element={<p>HR Module</p>} />
-                    <Route path="/admin/module" element={<ModulesPage />} /> 
+                    <Route path="/admin/module" element={<ModulesPage />} />
                 </Route>
             </Route>
 

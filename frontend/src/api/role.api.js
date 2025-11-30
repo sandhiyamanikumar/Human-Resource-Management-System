@@ -7,7 +7,7 @@ const API_URL = "/api/roles";
 export const getRoles = async () => {
     try {
         const res = await axiosInstance.get(API_URL);
-        // Return in { data: [] } format so existing code is safe
+        // Return in { data: [] } format 
         return { data: Array.isArray(res.data) ? res.data : res.data.roles || [] };
     } catch (error) {
         console.error("Failed to fetch roles:", error);
