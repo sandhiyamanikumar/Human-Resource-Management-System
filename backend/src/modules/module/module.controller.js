@@ -1,87 +1,103 @@
-const Module = require('./module.model');
-const Role = require('../role/role.model');
+const Module = require("./module.model");
+const Role = require("../role/role.model");
 
 // Create Module
 exports.createModule = async (req, res) => {
-    try {
-        const { moduleName, description, permissions } = req.body;
+  try {
+    const { moduleName, description, permissions } = req.body;
 
-        //validate permissions
-        const allowedPermissions = ["view", "create", "edit", "delete", "approve", "reject", "mark"];
-        const validPermissions = Array.isArray(permissions)
-            ? permissions.filter(p => allowedPermissions.includes(p))
-            : [];
+    //validate permissions
+    const allowedPermissions = [
+      "view",
+      "create",
+      "edit",
+      "delete",
+      "approve",
+      "reject",
+      "mark",
+    ];
+    const validPermissions = Array.isArray(permissions)
+      ? permissions.filter((p) => allowedPermissions.includes(p))
+      : [];
 
-        const mod = new Module({
-            moduleName: moduleName.toLowerCase().trim(),
-            description,
-            permissions: validPermissions,
-        });
+    const mod = new Module({
+      moduleName: moduleName.toLowerCase().trim(),
+      description,
+      permissions: validPermissions,
+    });
 
-        await mod.save();
-        res.status(201).json(mod);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
+    await mod.save();
+    res.status(201).json(mod);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 };
 
 // Get Modules
 exports.getModules = async (req, res) => {
-    try {
-        const modules = await Module.find();
-        res.json(modules);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+  try {
+    const modules = await Module.find();
+    res.json(modules);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 // Update Module
 exports.updateModule = async (req, res) => {
-    try {
-        const { moduleName, description, permissions } = req.body;
+  try {
+    const { moduleName, description, permissions } = req.body;
 
-        const allowedPermissions = ["view", "create", "edit", "delete", "approve", "reject", "mark"];
-        const validPermissions = Array.isArray(permissions)
-            ? permissions.filter(p => allowedPermissions.includes(p))
-            : [];
+    const allowedPermissions = [
+      "view",
+      "create",
+      "edit",
+      "delete",
+      "approve",
+      "reject",
+      "mark",
+    ];
+    const validPermissions = Array.isArray(permissions)
+      ? permissions.filter((p) => allowedPermissions.includes(p))
+      : [];
 
-        const mod = await Module.findByIdAndUpdate(
-            req.params.id,
-            {
-                moduleName: moduleName ? moduleName.toLowerCase().trim() : undefined,
-                description,
-                permissions: validPermissions
-            },
-            { new: true }
-        );
-        res.json(mod);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
+    const mod = await Module.findByIdAndUpdate(
+      req.params.id,
+      {
+        moduleName: moduleName ? moduleName.toLowerCase().trim() : undefined,
+        description,
+        permissions: validPermissions,
+      },
+      { new: true }
+    );
+    res.json(mod);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 };
 
 // Delete Module
 exports.deleteModule = async (req, res) => {
-    try {
-        const moduleId = req.params.id;
+  try {
+    const moduleId = req.params.id;
 
-        // Find the module first
-        const mod = await Module.findById(moduleId);
-        if (!mod) return res.status(404).json({ message: 'Module not found' });
+    // Find the module first
+    const mod = await Module.findById(moduleId);
+    if (!mod) return res.status(404).json({ message: "Module not found" });
 
-        const moduleName = mod.moduleName;
+    const moduleName = mod.moduleName;
 
-        // Delete the module
-        await Module.findByIdAndDelete(moduleId);
+    // Delete the module
+    await Module.findByIdAndDelete(moduleId);
 
-        // Remove this module from all roles' permissions
-        await Role.updateMany(
-            {},
-            { $unset: { [`permissions.${moduleName}`]: "" } }
-        );
+    // Remove this module from all roles' permissions
+    await Role.updateMany(
+      {},
+      { $unset: { [`permissions.${moduleName}`]: "" } }
+    );
 
-        res.json({ message: 'Module and its permissions removed from all roles' });
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
+    res.json({ message: "Module and its permissions removed from all roles" });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 };
