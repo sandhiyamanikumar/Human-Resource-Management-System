@@ -15,9 +15,8 @@ import RoleList from "../modules/admin/roles/RoleList";
 import RoleForm from "../modules/admin/roles/RoleForm";
 import AssignRole from "../modules/admin/roles/AssignRole";
 import ModulesPage from "../modules/admin/modulesManagement/ModulesPage";
-
 import EmployeesPage from "../modules/employees/EmployeesPage";
-
+import LeavePage from "../modules/leave/LeavePage";
 
 const AppRoutes = () => {
     return (
@@ -41,7 +40,7 @@ const AppRoutes = () => {
                     <Route path="role/edit/:id" element={<RoleForm />} />
                     <Route path="assign-role" element={<AssignRole />} />
                     <Route path="employee" element={<EmployeesPage />} />
-                    <Route path="leave" element={<p>Leave Module</p>} />
+                    <Route path="leave" element={<LeavePage />} />
                     <Route path="attendance" element={<p>Attendance Module</p>} />
                     <Route path="hr" element={<p>HR Module</p>} />
                     <Route path="/admin/module" element={<ModulesPage />} />
