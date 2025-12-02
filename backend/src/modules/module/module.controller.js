@@ -14,7 +14,6 @@ exports.createModule = async (req, res) => {
       "delete",
       "approve",
       "reject",
-      "mark",
     ];
     const validPermissions = Array.isArray(permissions)
       ? permissions.filter((p) => allowedPermissions.includes(p))
@@ -54,8 +53,7 @@ exports.updateModule = async (req, res) => {
       "edit",
       "delete",
       "approve",
-      "reject",
-      "mark",
+      "reject"
     ];
     const validPermissions = Array.isArray(permissions)
       ? permissions.filter((p) => allowedPermissions.includes(p))
