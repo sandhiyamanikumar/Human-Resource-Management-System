@@ -6,7 +6,16 @@ const moduleSchema = new mongoose.Schema({
   permissions: [
     {
       type: String,
-      enum: ["view", "create", "edit", "delete", "approve", "reject", "mark"],
+      enum: [
+        "view",
+        "create",
+        "edit",
+        "delete",
+        "approve",
+        "reject",
+        "cancel",
+        "viewAll"
+      ],
     },
   ],
 });
