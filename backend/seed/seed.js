@@ -33,7 +33,7 @@ const modulesData = [
   },
   {
     moduleName: "employee",
-    permissions: ["view", "create", "edit"],
+    permissions: ["view", "create", "edit","view-my-profile"],
     description: "Employee management module",
   },
   {
@@ -65,7 +65,7 @@ const rolesData = [
       role: ["view", "create", "edit", "delete"],
       "assign-role": ["view", "edit"],
       hr: ["view", "create", "edit"],
-      employee: ["view", "create", "edit"],
+      employee: ["view", "create", "edit","view-my-profile"],
       leave: ["view", "create", "approve", "reject"],
       module: ["view", "create", "edit", "delete"],
     },
@@ -82,7 +82,7 @@ const rolesData = [
     roleName: "employee",
     permissions: {
       employee: ["view"],
-      leave: ["view", "create"],
+      leave: ["view", "create","view-my-profile"],
     },
   },
 ];

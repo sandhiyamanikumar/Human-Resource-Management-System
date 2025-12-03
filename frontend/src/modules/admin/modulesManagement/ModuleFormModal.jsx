@@ -6,7 +6,7 @@ const ModuleFormModal = ({ show, onHide, module, refreshModules }) => {
     const [moduleName, setModuleName] = useState("");
     const [description, setDescription] = useState("");
     const [permissions, setPermissions] = useState([]);
-    const allPermissions = ["view", "create", "edit", "delete", "approve", "reject", "mark"];
+    const allPermissions = ["view", "create", "edit", "delete", "approve", "reject", "cancel", "viewAll", "view-my-profile"];
 
     useEffect(() => {
         if (module) {

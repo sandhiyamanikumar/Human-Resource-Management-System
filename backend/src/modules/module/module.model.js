@@ -14,7 +14,8 @@ const moduleSchema = new mongoose.Schema({
         "approve",
         "reject",
         "cancel",
-        "viewAll"
+        "viewAll",
+        "view-my-profile",
       ],
     },
   ],

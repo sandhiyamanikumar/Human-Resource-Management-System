@@ -145,6 +145,43 @@ exports.getEmployeeById = async (req, res) => {
   }
 };
 
+exports.getMyProfile = async (req, res) => {
+  try {
+    const employee = await Employee.findOne({
+      authUser: req.user.id,
+    }).populate({
+      path: "authUser",
+      select: "name email status role",
+      populate: {
+        path: "role",
+        select: "roleName permissions",
+      },
+    });
+
+    if (!employee)
+      return res.status(404).json({ message: "Employee not found" });
+
+    // optional: merge authUser data into employee object
+    const profile = {
+      _id: employee._id,
+      name: employee.name || employee.authUser.name,
+      email: employee.email || employee.authUser.email,
+      phone: employee.phone,
+      department: employee.department,
+      designation: employee.designation,
+      dateOfJoining: employee.dateOfJoining,
+      manager: employee.manager,
+      orgId: employee.orgId,
+      status: employee.status, // virtual
+      role: employee.authUser.role?.roleName,
+    };
+
+    res.json(profile);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // Update employee
 exports.updateEmployee = async (req, res) => {
   try {
