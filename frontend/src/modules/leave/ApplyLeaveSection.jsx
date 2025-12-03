@@ -3,7 +3,7 @@ import { Form, Button } from "react-bootstrap";
 import { applyLeave } from "../../api/leave.api";
 import { useToast } from "../../context/ToastContext";
 
-const ApplyLeaveSection = () => {
+const ApplyLeaveSection = ({ onSuccess }) => {
   const { showToast } = useToast();
   const [formData, setFormData] = useState({
     leaveType: "sick",
@@ -21,6 +21,18 @@ const ApplyLeaveSection = () => {
     try {
       const res = await applyLeave(formData);
       showToast(res.message, "success");
+
+      //  Reset form
+      setFormData({
+        leaveType: "sick",
+        startDate: "",
+        endDate: "",
+        reason: "",
+      });
+
+      //  Navigate to My Leaves
+      if (onSuccess) onSuccess();
+      
     } catch (err) {
       showToast(err.response?.data?.message || err.message, "danger");
     }

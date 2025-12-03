@@ -1,6 +1,6 @@
 import axiosInstance from "./axiosInstance";
 
-const API_URL = "/api/employee"; 
+const API_URL = "/api/employee";
 
 // GET employees with pagination + filters
 export const getEmployees = async (params = {}) => {
@@ -15,15 +15,21 @@ export const createEmployee = async (payload) => {
   return res;
 };
 
-// GET employee by ID
-export const getEmployeeById = async (id) => {
-  const res = await axiosInstance.get(`${API_URL}/${id}`);
+// GET logged-in employee profile (new)
+export const getMyProfile = async () => {
+  const res = await axiosInstance.get(`${API_URL}/me`);
   return res.data;
 };
 
 // GET users who are not linked to employee table
 export const getUnlinkedUsers = async () => {
   const res = await axiosInstance.get(`${API_URL}/unlinked-users`);
+  return res.data;
+};
+
+// GET employee by ID
+export const getEmployeeById = async (id) => {
+  const res = await axiosInstance.get(`${API_URL}/${id}`);
   return res.data;
 };
 

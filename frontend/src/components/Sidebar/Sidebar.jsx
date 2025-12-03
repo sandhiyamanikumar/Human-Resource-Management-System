@@ -2,6 +2,7 @@ import { Nav, Offcanvas, Button } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { List } from "react-bootstrap-icons";
+import { VALID_MODULES } from "../../config/ValidModules"; // use your old valid modules
 import styles from "./Sidebar.module.css";
 
 const Sidebar = ({ show, setShow }) => {
@@ -10,7 +11,65 @@ const Sidebar = ({ show, setShow }) => {
 
   if (!user || !user.permissions) return null;
 
-  const modules = Object.keys(user.permissions);
+  // Only show modules that exist in VALID_MODULES
+  const modules = Object.keys(user.permissions).filter((mod) =>
+    VALID_MODULES.includes(mod)
+  );
+
+  // -----------------------------
+  // LABEL HANDLER (Employee → My Profile)
+  // -----------------------------
+  const getLabelForModule = (mod) => {
+    if (mod === "employee") {
+      const empPerms = user.permissions.employee || [];
+
+      // Employee with only view-my-profile
+      if (empPerms.includes("view-my-profile") && !empPerms.includes("view")) {
+        return "My Profile";
+      }
+
+      // HR/Admin
+      if (empPerms.includes("view")) {
+        return "Employee";
+      }
+
+      return "Employee";
+    }
+
+    // Leave module label
+    if (mod === "leave") return "Leave";
+
+    return mod.charAt(0).toUpperCase() + mod.slice(1);
+  };
+
+  // -----------------------------
+  // ROUTE HANDLER
+  // -----------------------------
+  const getRouteForModule = (mod) => {
+    if (mod === "employee") {
+      const empPerms = user.permissions.employee || [];
+      if (empPerms.includes("view-my-profile") && !empPerms.includes("view")) {
+        return "/my-profile";
+      }
+      return "/employee";
+    }
+
+    if (mod === "leave") {
+      const leavePerms = user.permissions.leave || [];
+      if (leavePerms.includes("approve") || leavePerms.includes("viewAll")) {
+        return "/leave-management";
+      }
+      return "/my-leave";
+    }
+
+    // Admin modules hierarchy
+    if (["role", "assign-role", "module"].includes(mod)) {
+      return `/admin/${mod}`;
+    }
+
+    // Default route
+    return `/${mod}`;
+  };
 
   return (
     <Offcanvas
@@ -20,38 +79,35 @@ const Sidebar = ({ show, setShow }) => {
       placement="start"
       className={`bg-dark text-white ${styles.sidebarWidth}`}
     >
-      {/* Desktop Header */}
       <div className="d-none d-md-flex justify-content-center align-items-center py-3 border-bottom">
         <h3 className="fw-bold text-primary m-0">HRMS</h3>
       </div>
 
-      {/* Mobile Header */}
       <Offcanvas.Header className="d-md-none d-flex justify-content-between align-items-center">
         <Offcanvas.Title className="fw-bold text-primary">HRMS</Offcanvas.Title>
-
         <Button variant="outline-light" onClick={() => setShow(false)}>
           <List size={24} />
         </Button>
       </Offcanvas.Header>
 
-      {/* ⭐ Wrap with scrolling container */}
       <Offcanvas.Body className={`${styles.scrollContainer} p-0`}>
         <Nav className="flex-column p-3">
           {modules.map(
             (mod) =>
-              user.permissions[mod]?.includes("view") && (
+              (mod === "employee" ||
+                user.permissions[mod]?.includes("view")) && (
                 <Nav.Link
                   as={Link}
-                  to={`/admin/${mod}`}
+                  to={getRouteForModule(mod)}
                   key={mod}
                   onClick={() => setShow(false)}
                   className={`mb-2 d-flex align-items-center ${
-                    location.pathname.startsWith(`/admin/${mod}`)
+                    location.pathname.startsWith(getRouteForModule(mod))
                       ? styles.activeItem
                       : styles.sidebarItem
                   }`}
                 >
-                  {mod.charAt(0).toUpperCase() + mod.slice(1)}
+                  {getLabelForModule(mod)}
                 </Nav.Link>
               )
           )}

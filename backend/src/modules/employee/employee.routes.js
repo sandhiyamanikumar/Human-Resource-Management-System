@@ -4,7 +4,9 @@ const authMiddleware = require("../../middlewares/auth.middleware");
 const checkPermission = require("../../middlewares/role.middleware");
 const employeeController = require("./employee.controller");
 
+// -----------------------------
 // Dashboard route
+// -----------------------------
 router.get(
   "/dashboard",
   authMiddleware,
@@ -12,7 +14,9 @@ router.get(
   employeeController.getEmployeeDashboard
 );
 
+// -----------------------------
 // Create employee
+// -----------------------------
 router.post(
   "/",
   authMiddleware,
@@ -20,7 +24,9 @@ router.post(
   employeeController.createEmployee
 );
 
+// -----------------------------
 // Get all employees
+// -----------------------------
 router.get(
   "/",
   authMiddleware,
@@ -28,7 +34,10 @@ router.get(
   employeeController.getAllEmployees
 );
 
+// -----------------------------
+// Get unlinked users
 // MUST COME BEFORE :id
+// -----------------------------
 router.get(
   "/unlinked-users",
   authMiddleware,
@@ -36,7 +45,15 @@ router.get(
   employeeController.getUnlinkedUsers
 );
 
+// -----------------------------
+// Get logged-in employee profile
+// MUST COME BEFORE :id
+// -----------------------------
+router.get("/me", authMiddleware, employeeController.getMyProfile);
+
+// -----------------------------
 // Get employee by ID (must be last)
+// -----------------------------
 router.get(
   "/:id",
   authMiddleware,
@@ -44,7 +61,9 @@ router.get(
   employeeController.getEmployeeById
 );
 
+// -----------------------------
 // Update employee
+// -----------------------------
 router.put(
   "/:id",
   authMiddleware,
@@ -52,7 +71,9 @@ router.put(
   employeeController.updateEmployee
 );
 
+// -----------------------------
 // Delete employee
+// -----------------------------
 router.delete(
   "/:id",
   authMiddleware,
