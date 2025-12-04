@@ -1,4 +1,5 @@
 const Role = require("./role.model");
+const Auth = require("../auth/auth.model");
 
 // Create Role
 exports.createRole = async (req, res) => {
@@ -51,5 +52,42 @@ exports.deleteRole = async (req, res) => {
     res.json({ message: "Role deleted" });
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+};
+
+// Handles role stats
+exports.getRolesCount = async (req, res) => {
+  try {
+    const roles = await Auth.aggregate([
+      {
+        $lookup: {
+          from: "roles",
+          localField: "role",
+          foreignField: "_id",
+          as: "roleData",
+        },
+      },
+      {
+        $unwind: {
+          path: "$roleData",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $group: {
+          _id: "$roleData.roleName",
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+    ]);
+
+    res.json(roles);
+  } catch (err) {
+    console.error("ROLE COUNT ERROR:", err);
+    res.status(500).json({
+      message: "Error fetching roles count",
+      error: err.message,
+    });
   }
 };

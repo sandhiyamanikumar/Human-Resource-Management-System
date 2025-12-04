@@ -15,7 +15,6 @@ const employeeSchema = new mongoose.Schema(
     department: { type: String },
     designation: { type: String },
     dateOfJoining: { type: Date },
-    // status: { type: String, enum: ['active', 'inactive'], default: 'active' },
     manager: { type: String },
   },
   {
