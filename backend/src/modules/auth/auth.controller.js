@@ -6,7 +6,6 @@ const { hashPassword } = require('../../utils/hashPassword');
 const { validateSignup } = require('./auth.validation');
 const sendEmail = require('../../utils/sendEmail');
 const User = require("./auth.model");
-const Role = require("../role/role.model");
 
 const signup = async (req, res) => {
     try {

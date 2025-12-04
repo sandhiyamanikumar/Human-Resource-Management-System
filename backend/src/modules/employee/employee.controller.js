@@ -207,3 +207,43 @@ exports.deleteEmployee = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// Handles employee stats.
+exports.getEmployeeStats = async (req, res) => {
+  try {
+    const totalEmployees = await Employee.countDocuments();
+
+    const activeEmployees = await Auth.countDocuments({ status: "Active" });
+    const pendingEmployees = await Auth.countDocuments({ status: "Pending" });
+
+    res.json({ totalEmployees, activeEmployees, pendingEmployees });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error fetching employee stats",
+      error: err.message,
+    });
+  }
+};
+
+// Get employee department distribution
+exports.getEmployeeDepartmentDistribution = async (req, res) => {
+  try {
+    const distribution = await Employee.aggregate([
+      {
+        $group: {
+          _id: "$department",
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } }, // sort by count
+    ]);
+
+    res.json(distribution); // returns [{ _id: "HR", count: 5 }, { _id: "IT", count: 10 }, ...]
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Error fetching department distribution",
+      error: err.message,
+    });
+  }
+};
