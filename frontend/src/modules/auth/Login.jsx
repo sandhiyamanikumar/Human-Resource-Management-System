@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Form, Button, Container, Alert, Spinner, Card } from "react-bootstrap";
-import { loginUser } from "../../api/auth.api"; // your API call
+import { loginUser } from "../../api/auth.api";
 import { useAuth } from "../../context/AuthContext";
+import { VALID_MODULES } from "../../config/ValidModules";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -16,39 +17,6 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // const handleSubmit = async (e) => {
-  //     e.preventDefault();
-  //     setLoading(true);
-  //     setError("");
-
-  //     try {
-  //         const res = await loginUser(formData);
-
-  //         const userData = res.data.user;       // { name, email, role, permissions }
-  //         const token = res.data.token;         // JWT token
-
-  //         login(userData, token);               // save in context + cookie
-
-  //         // Redirect based on role
-  //         if (!userData.role) {
-  //             navigate("/pending-role");
-
-  //         } else if (userData.role === "admin") {
-  //             navigate("/admin");
-
-  //         } else if (userData.role === "hr") {
-  //             navigate("/hr");
-  //         } else {
-  //             navigate("/employee");
-  //         }
-  //     } catch (err) {
-  //         setError(err.response?.data?.message || "Login failed");
-  //         console.log(err)
-  //     } finally {
-  //         setLoading(false);
-  //     }
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -56,13 +24,58 @@ const Login = () => {
 
     try {
       const res = await loginUser(formData);
-
       const userData = res.data.user;
       const token = res.data.token;
 
       login(userData, token);
 
-      navigate("/");
+      let redirectRoute = "/";
+
+      // -----------------------------
+      // Admin: show dashboard if has permission
+      // -----------------------------
+      if (userData.permissions.dashboard?.includes("view")) {
+        redirectRoute = "/dashboard";
+      } else {
+        // -----------------------------
+        // Non-admin: find first VALID module that is NOT an admin module
+        // -----------------------------
+        const allowedModule = VALID_MODULES.find((mod) => {
+          const perms = userData.permissions[mod] || [];
+          const hasView =
+            perms.includes("view") || perms.includes("view-my-profile");
+
+          if (!hasView || mod === "dashboard") return false;
+
+          // Skip admin modules for non-admin users
+          if (mod.startsWith("admin")) return false;
+
+          return true;
+        });
+
+        if (!allowedModule) {
+          redirectRoute = "/pending-role"; // No module access
+        } else {
+          // Special case: employee only has view-my-profile
+          if (
+            allowedModule === "employee" &&
+            userData.permissions.employee?.includes("view-my-profile") &&
+            !userData.permissions.employee?.includes("view")
+          ) {
+            redirectRoute = "/my-profile";
+          } else if (allowedModule === "leave") {
+            const leavePerms = userData.permissions.leave || [];
+            redirectRoute =
+              leavePerms.includes("approve") || leavePerms.includes("viewAll")
+                ? "/leave-management"
+                : "/my-leave";
+          } else {
+            redirectRoute = `/${allowedModule}`;
+          }
+        }
+      }
+
+      navigate(redirectRoute);
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
       console.log(err);

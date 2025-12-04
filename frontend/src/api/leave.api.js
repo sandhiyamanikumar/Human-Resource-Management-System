@@ -12,14 +12,10 @@ export const getMyLeaves = () =>
 export const cancelLeave = (id) =>
   axiosInstance.put(`${API_URL}/cancel/${id}`).then((res) => res.data);
 
-// // Admin/HR APIs
-// export const getAllLeaves = () =>
-//   axiosInstance.get(`${API_URL}`).then((res) => res.data);
-
 // Admin/HR APIs
 export const getAllLeaves = (filter = {}) =>
   axiosInstance
-    .get(`${API_URL}`, { params: filter }) // <-- send filter as query params
+    .get(`${API_URL}`, { params: filter }) // send filter as query params
     .then((res) => res.data);
 
 export const updateLeaveStatus = (id, statusValue) =>
