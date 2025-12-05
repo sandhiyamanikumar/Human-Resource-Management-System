@@ -2,7 +2,7 @@ import { Nav, Offcanvas, Button } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { List } from "react-bootstrap-icons";
-import { VALID_MODULES } from "../../config/ValidModules"; // use your old valid modules
+import { VALID_MODULES } from "../../config/ValidModules";
 import styles from "./Sidebar.module.css";
 
 const Sidebar = ({ show, setShow }) => {
@@ -11,63 +11,61 @@ const Sidebar = ({ show, setShow }) => {
 
   if (!user || !user.permissions) return null;
 
-  // Only show modules that exist in VALID_MODULES
-  const modules = Object.keys(user.permissions).filter((mod) =>
-    VALID_MODULES.includes(mod)
-  );
+  // Get all modules user has permission for (view)
+  let modules = Object.keys(user.permissions).filter((mod) => {
+    const perms = user.permissions[mod] || [];
+    const hasView = perms.includes("view") || perms.includes("view-my-profile");
 
-  // -----------------------------
-  // LABEL HANDLER (Employee → My Profile)
-  // -----------------------------
+    if (!hasView || !VALID_MODULES.includes(mod)) return false;
+
+    // Special case: employee only has view-my-profile
+    if (
+      mod === "employee" &&
+      perms.includes("view-my-profile") &&
+      !perms.includes("view")
+    )
+      return true;
+
+    return true;
+  });
+
+  // Only add Dashboard if user has dashboard view permission
+  if (
+    user.permissions.dashboard?.includes("view") &&
+    !modules.includes("dashboard")
+  ) {
+    modules.unshift("dashboard");
+  }
+
+  // Map module to label
   const getLabelForModule = (mod) => {
+    if (mod === "dashboard") return "Dashboard";
     if (mod === "employee") {
       const empPerms = user.permissions.employee || [];
-
-      // Employee with only view-my-profile
-      if (empPerms.includes("view-my-profile") && !empPerms.includes("view")) {
+      if (empPerms.includes("view-my-profile") && !empPerms.includes("view"))
         return "My Profile";
-      }
-
-      // HR/Admin
-      if (empPerms.includes("view")) {
-        return "Employee";
-      }
-
       return "Employee";
     }
-
-    // Leave module label
     if (mod === "leave") return "Leave";
-
     return mod.charAt(0).toUpperCase() + mod.slice(1);
   };
 
-  // -----------------------------
-  // ROUTE HANDLER
-  // -----------------------------
+  // Map module to route dynamically
   const getRouteForModule = (mod) => {
+    if (mod === "dashboard") return "/dashboard";
     if (mod === "employee") {
       const empPerms = user.permissions.employee || [];
-      if (empPerms.includes("view-my-profile") && !empPerms.includes("view")) {
+      if (empPerms.includes("view-my-profile") && !empPerms.includes("view"))
         return "/my-profile";
-      }
       return "/employee";
     }
-
     if (mod === "leave") {
       const leavePerms = user.permissions.leave || [];
-      if (leavePerms.includes("approve") || leavePerms.includes("viewAll")) {
+      if (leavePerms.includes("approve") || leavePerms.includes("viewAll"))
         return "/leave-management";
-      }
       return "/my-leave";
     }
-
-    // Admin modules hierarchy
-    if (["role", "assign-role", "module"].includes(mod)) {
-      return `/admin/${mod}`;
-    }
-
-    // Default route
+    if (user.permissions[mod]?.includes("view")) return `/admin/${mod}`;
     return `/${mod}`;
   };
 
@@ -92,25 +90,21 @@ const Sidebar = ({ show, setShow }) => {
 
       <Offcanvas.Body className={`${styles.scrollContainer} p-0`}>
         <Nav className="flex-column p-3">
-          {modules.map(
-            (mod) =>
-              (mod === "employee" ||
-                user.permissions[mod]?.includes("view")) && (
-                <Nav.Link
-                  as={Link}
-                  to={getRouteForModule(mod)}
-                  key={mod}
-                  onClick={() => setShow(false)}
-                  className={`mb-2 d-flex align-items-center ${
-                    location.pathname.startsWith(getRouteForModule(mod))
-                      ? styles.activeItem
-                      : styles.sidebarItem
-                  }`}
-                >
-                  {getLabelForModule(mod)}
-                </Nav.Link>
-              )
-          )}
+          {modules.map((mod) => (
+            <Nav.Link
+              as={Link}
+              to={getRouteForModule(mod)}
+              key={mod}
+              onClick={() => setShow(false)}
+              className={`mb-2 d-flex align-items-center ${
+                location.pathname.startsWith(getRouteForModule(mod))
+                  ? styles.activeItem
+                  : styles.sidebarItem
+              }`}
+            >
+              {getLabelForModule(mod)}
+            </Nav.Link>
+          ))}
         </Nav>
       </Offcanvas.Body>
     </Offcanvas>

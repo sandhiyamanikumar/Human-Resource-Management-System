@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Form, Button, Container, Row, Col, Alert, Spinner, Card } from "react-bootstrap";
+import { Form, Button, Container, Alert, Spinner, Card } from "react-bootstrap";
 import { signup } from "../../api/auth.api";
 
 const Signup = () => {

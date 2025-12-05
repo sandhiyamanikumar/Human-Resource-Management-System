@@ -16,7 +16,6 @@ const EmployeesPage = () => {
 
   // Filters
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("");
   const [department, setDepartment] = useState("");
 
   // Pagination
@@ -80,7 +79,7 @@ const EmployeesPage = () => {
   useEffect(() => {
     loadEmployees();
     loadUnlinkedUsers();
-  }, [page, search, status, department, refreshTrigger]);
+  }, [page, search, department, refreshTrigger]);
 
   // ---------------- Edit / Add ----------------
   const handleEdit = (emp) => {
@@ -148,20 +147,6 @@ const EmployeesPage = () => {
               setPage(1);
             }}
           />
-        </div>
-
-        <div className="flex-shrink-0" style={{ minWidth: "200px" }}>
-          <Form.Select
-            value={status}
-            onChange={(e) => {
-              setStatus(e.target.value);
-              setPage(1);
-            }}
-          >
-            <option value="">All Status</option>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-          </Form.Select>
         </div>
 
         <div className="flex-shrink-0" style={{ minWidth: "200px" }}>

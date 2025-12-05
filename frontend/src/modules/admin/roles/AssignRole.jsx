@@ -24,8 +24,8 @@ const AssignRole = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await getUsers({ status: statusFilter }); // make sure your API accepts object
-      setUsers(response || []); // assign users array correctly
+      const response = await getUsers({ status: statusFilter }); 
+      setUsers(response || []); // assign users array
     } catch (err) {
       console.error("Fetch users error:", err);
       showToast("Failed to load users", "danger");
@@ -60,7 +60,7 @@ const AssignRole = () => {
   };
 
   return (
-    <div className="mx-auto" style={{ maxWidth: "1000px" }}>
+    <div className="mx-md-auto mx-3 my-4" style={{ maxWidth: "1000px" }}>
       <div className="d-flex align-items-center mb-3 justify-content-between">
         <h3>Assign Role</h3>
         <Form.Select

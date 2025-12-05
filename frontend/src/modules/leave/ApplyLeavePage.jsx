@@ -7,7 +7,7 @@ const ApplyLeavePage = () => {
 
   // Function to redirect after successful submission
   const handleSuccess = () => {
-    navigate("/my-leave"); // go to My Leaves page
+    navigate("/my-leave"); 
   };
 
   return (
