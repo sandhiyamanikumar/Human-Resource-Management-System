@@ -33,7 +33,7 @@ const modulesData = [
   },
   {
     moduleName: "employee",
-    permissions: ["view", "create", "edit","view-my-profile"],
+    permissions: ["view", "create", "edit", "view-my-profile"],
     description: "Employee management module",
   },
   {
@@ -54,6 +54,11 @@ const modulesData = [
     permissions: ["view", "create", "edit", "delete"],
     description: "Manage system modules",
   },
+  {
+    moduleName: "dashboard",
+    permissions: ["view"],
+    description: "Dashboard overview and metrics",
+  },
 ];
 
 // Define roles
@@ -61,11 +66,12 @@ const rolesData = [
   {
     roleName: "admin",
     permissions: {
+      dashboard: ["view"],
       admin: ["view", "create", "edit", "delete"],
       role: ["view", "create", "edit", "delete"],
       "assign-role": ["view", "edit"],
       hr: ["view", "create", "edit"],
-      employee: ["view", "create", "edit","view-my-profile"],
+      employee: ["view", "create", "edit", "view-my-profile"],
       leave: ["view", "create", "approve", "reject"],
       module: ["view", "create", "edit", "delete"],
     },
@@ -82,22 +88,20 @@ const rolesData = [
     roleName: "employee",
     permissions: {
       employee: ["view"],
-      leave: ["view", "create","view-my-profile"],
+      leave: ["view", "create", "view-my-profile"],
     },
   },
 ];
 
 async function seedDB() {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log("MongoDB connected");
+    await mongoose.connect(process.env.MONGO_URI, {});
+    console.log("MongoDB Atlas connected");
 
-    // Clear existing data
-    await Module.deleteMany({});
-    await Role.deleteMany({});
+    if (process.env.NODE_ENV !== "production") {
+      await Module.deleteMany({});
+      await Role.deleteMany({});
+    }
 
     // Insert modules
     await Module.insertMany(modulesData);
@@ -110,11 +114,11 @@ async function seedDB() {
     // Create admin user
     const adminRole = await Role.findOne({ roleName: "admin" });
 
-    const hashedPassword = await bcrypt.hash("Admin123@", 10);
+    const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
 
     const adminUser = new User({
       name: "Admin",
-      email: "sandhiyamanikumar2004@gmail.com",
+      email: process.env.ADMIN_EMAIL,
       password: hashedPassword,
       role: adminRole._id,
       orgId: "ORG-ADMIN-001",
@@ -122,8 +126,16 @@ async function seedDB() {
       status: "Active",
     });
 
-    await adminUser.save();
-    console.log("Admin user created successfully");
+    const existingAdmin = await User.findOne({
+      email: process.env.ADMIN_EMAIL,
+    });
+
+    if (!existingAdmin) {
+      await adminUser.save();	
+      console.log("Admin user created successfully");
+    } else {
+      console.log("Admin user already exists");
+    }
 
     mongoose.disconnect();
     console.log("Seeding completed and MongoDB disconnected");
